@@ -20,8 +20,12 @@ http://www.thebuzzmedia.com/designing-a-secure-rest-api-without-oauth-authentica
 
 ## Workflow
 
-* PROXY and SERVER communicate before hand to exchange a secret key, and some
-  public piece of identifiable information (which we'll call the public key)
+The first stage is that PROXY and SERVER communicate before hand to exchange
+a secret key, and a piece of identifiable information that can be used to map
+to the secret key. We'll call this the public key.
+
+Note, the above step only occurs once, ever. After that point, the secret key
+will never be transmitted and will ONLY be used to sign messages.
 
 * CLIENT connects to PROXY, selects the MUD they want to play from a list.
 * PROXY looks up the secret key and the public key for that MUD.
