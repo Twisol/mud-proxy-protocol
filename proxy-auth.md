@@ -37,9 +37,9 @@ on the ClientInfo and Disconnect commands below.
   sending `IAC WILL PROXY`.
 * SERVER responds that it supports the `PROXY` option.
 * PROXY gets the client address and current timestamp (UTC time), as well as
-  some other information, then generates the HMAC from it and sends it to
+  some other information, then generates the signature from it and sends it to
   SERVER as a `ClientInfo` command.
-* SERVER receives the message and generates its own HMAC and compares.
+* SERVER receives the message and generates its own signature and compares.
 * If there's something wrong, SERVER sends a `Disconnect` command back.
   Otherwise, proceed as normal.
 
