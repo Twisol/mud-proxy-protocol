@@ -226,8 +226,7 @@ security but at the same time should not result in too much extra work.
 
 ## FAQ
 
-### What happens if someone else poses as an existing MUD server, and a proxy
-with support for that server connects to it?
+### What happens if someone else poses as an existing MUD server, and a proxy with support for that server connects to it?
 
 In this scenario (user A intercepts requests for the hostname/ip that MUD
 M uses, which causes connections from proxy P to go to MUD B), the user running
