@@ -39,7 +39,7 @@ will never be transmitted and will ONLY be used to sign messages.
 * If there's something wrong, SERVER sends a message back. Otherwise, proceed
   as normal.
 
-## Telnet Options and General Details
+## Telnet Options and General Information
 
 The actual telnet option will be `\xCA` which is decimal `202`. It will use
 a command/value syntax with JSON payloads (mostly) similar to GMCP.
