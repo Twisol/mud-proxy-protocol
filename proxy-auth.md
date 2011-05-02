@@ -27,17 +27,21 @@ to the secret key. We'll call this the public key.
 Note, the above step only occurs once, ever. After that point, the secret key
 will never be transmitted and will ONLY be used to sign messages.
 
+Following is the basic communication workflow. More details are in the sections
+on the ClientInfo and Disconnect commands below.
+
 * CLIENT connects to PROXY, selects the MUD they want to play from a list.
 * PROXY looks up the secret key and the public key for that MUD.
-* PROXY initiates connection to SERVER
-* During telnet negotation, PROXY informs the server that it IS a proxy.
-* SERVER responds with a request for the message
+* PROXY initiates connection to SERVER.
+* During telnet negotation, PROXY informs the server that it IS a proxy by
+  sending `IAC WILL PROXY`.
+* SERVER responds that it supports the `PROXY` option.
 * PROXY gets the client address and current timestamp (UTC time), as well as
   some other information, then generates the HMAC from it and sends it to
-  SERVER.
+  SERVER as a `ClientInfo` command.
 * SERVER receives the message and generates its own HMAC and compares.
-* If there's something wrong, SERVER sends a message back. Otherwise, proceed
-  as normal.
+* If there's something wrong, SERVER sends a `Disconnect` command back.
+  Otherwise, proceed as normal.
 
 ## Telnet Options and General Information
 
