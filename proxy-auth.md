@@ -215,19 +215,6 @@ If either party discovers a leak, they should immediately notify the other
 party and remove the leaked key from their respective configurations, and
 generate a new shared key to use.
 
-### Unique Public Key vs UUID
-
-In this document I've described the public key as being a unique identifier
-(UUID) per proxy server. The primary reason for this is to minimize the amount
-of work required on a MUD server to implement support for this protocol. By not
-forcing them to generate a public key as well as the secret key (and by
-enforcing that all proxies use a standard format for the public key) I hope to
-raise adoption of the protocol.
-
-The other alternative, of course, is for the public key to be generated (and
-unique per (proxy,mud) pair), which adds a minimal amount of additional
-security but at the same time should not result in too much extra work.
-
 ## FAQ
 
 ### What happens if someone else poses as an existing MUD server, and a proxy with support for that server connects to it?
