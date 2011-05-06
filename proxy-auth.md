@@ -99,6 +99,11 @@ run through the HMAC function. On the receiving end, the exact string after the
 signature should be run through the HMAC function in the same fashion. This
 ensures both parties generate the signature using the exact same message.
 
+The timestamp MAY be used by the receiving party and compared to the time the
+message was received. If the time difference is greater than a reasonable amount
+of time (say, 1 minute) the receiving party can assume that the message is
+invalid.
+
 ## Commands
 
 At first, there will be two subcommands, `ClientInfo` which is sent by the
@@ -114,8 +119,8 @@ message will be:
 `IAC SB PROXY ClientInfo <signature>:<data> IAC SE`
 
 The JSON string will, at a minimum, contain keys for: proxy name, proxy
-version, proxy address, and client address. The proxy and client address values
-MUST be lists (arrays) of the following format: `["<ip:string>", <port:int>]`
+version, and client address. The client address value
+MUST be a list (array) of the following format: `["<ip:string>", <port:int>]`
 
 These keys are in addition to the keys required for signed messages (see the
 Signed Message Format section)
@@ -126,7 +131,6 @@ Example JSON object:
 {
     "proxy_name": "RedLantern",
     "proxy_version": "0.1.1",
-    "proxy_addr": ["127.0.0.1", 8080],
     "client_addr": ["192.168.0.2", 3452],
     "timestamp": 123456789,
     "public_key": "5e3f7ade701644eb8c8b8e34558d6cc2"
@@ -137,9 +141,6 @@ The server MUST accept the listed keys, and MUST NOT assume that these keys are
 the only keys that will be sent. A proxy MAY send an arbitrary number of
 additional key/value pairs in this message, and the server MUST accept these
 values, even if they do nothing with them.
-
-The server MAY use the proxy address for supplemental identification (compare
-it to the stored address for this particular public_key).
 
 ### Disconnect
 
@@ -161,12 +162,9 @@ Possible reasons:
 * EXPIRED
     * If the timestamp is too old, the server MAY send back a message like so:
       `IAC SB PROXY Disconnect {"reason": "EXPIRED"} IAC SE`
-* KEYNOTFOUND
-    * If the public key could not be located:
-      `IAC SB PROXY Disconnect {"reason": "KEYNOTFOUND"} IAC SE`
-* REVOKED
-    * If the public key is valid, but the server decided to ban the proxy
-      access: `IAC SB PROXY Disconnect {"reason": "REVOKED"} IAC SE`
+* UNAUTHORIZED
+    * If the public key could not be located or is revoked:
+      `IAC SB PROXY Disconnect {"reason": "UNAUTHORIZED"} IAC SE`
 * TOOMANY
     * If the server has a connection limit for the proxy, the server MAY send
       this back: `IAC SB PROXY Disconnect {"reason": "TOOMANY"} IAC SE`
