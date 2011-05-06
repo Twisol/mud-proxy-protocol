@@ -215,6 +215,51 @@ generate a new shared key to use.
 
 ## FAQ
 
+### Why a new protocol, why not make it a command in an existing protocol?
+
+The primary reason is because existing protocols are intended to be client <-> server.
+By rolling this into an existing protocol, the server and proxy must both support
+the full spec of the existing protocol, and the proxy must tell the server that
+it supports this protocol, which could in turn lead to the server making assumptions
+about capabilities.
+
+For example, let's say it was supported as a GMCP package. The server must have
+support for the GMCP spec, to start with and so must the proxy. The proxy must then
+attempt to negotiate support for GMCP with the server to send the client information.
+The proxy then must inspect every incoming message from the server to see if it's
+a GMCP message and if it's a GMCP message that it needs to act on. It also needs to
+ensure that if the client does (or does not) support GMCP that it properly forwards
+or blocks those messages.
+
+### Wouldn't it be simpler to embed the signature into the data object?
+
+The problem with embedding the signature into the data object (ie, as a key in the json
+object instead of preceding it) is that both parties need to generate the signature
+using the exact same string. If we took this approach, then this is what would need
+to happen:
+
+* Sender builds the object containing the properties it needs to send, then serializes
+this object according to a very strict set of rules.
+* Sender generates the signature using the serialized string.
+* Sender inserts the signature into the original object, then reserializes it and creates
+the full message.
+* Sender sends the full message to the receiver.
+
+* Receiver parses the message and extracts the data.
+* Receiver deserializes the data, extracts the public key, timestamp, and signature.
+* Receiver looks up the secret key, and reserializes the data object (without the
+signature) using the exact same set of strict rules as the sender.
+* Receiver generates the signature using the reserialized string.
+* Receiver compares the two signatures.
+
+The biggest issue here is that you have to have a very clearly defined set of rules as to
+how you are supposed to format the serialized string, since both parties need to use *exactly*
+the same string and secret key to generate the same signature.
+
+Instead of relying on these rules that complicate things, we move the signature out of the
+serialized string. This allows both parties to use the exact same serialized string without
+any additional parsing/restructuring overhead.
+
 ### What happens if someone else poses as an existing MUD server, and a proxy with support for that server connects to it?
 
 In this scenario (user A intercepts requests for the hostname/ip that MUD
