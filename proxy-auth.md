@@ -63,11 +63,10 @@ of confirming data consistency and origin. If present, it MUST be created
 through HMAC, using SHA1 as the hash function, represented as a string of
 hexadecimal digits. Example Ruby code:
 
-    OpenSSL::HMAC.digest(
-      OpenSSL::Digest::Digest.new('sha1'),
-      secret_key,
-      data
-    )
+    require "openssl"
+    hmac = OpenSSL::HMAC.new("my secret key", OpenSSL::Digest::Digest.new('sha1'))
+    hmac << "my data stream"
+    signature = hmac.hexdigest
 
 ## Message Format
 
@@ -77,7 +76,7 @@ A message compliant with this document will have the following format:
 
 More precisely, a message must conform to the following regular expression:
 
-    ^([^ ]+) (?:([A-Za-z0-9]+):)?(.*)$
+    ^([^ ]+) (?:([A-Za-z0-9]{20}):)?(.*)$
 
 The SIGNATURE field, if present, MUST be the result of the aforementioned HMAC
 signing process.
@@ -85,7 +84,7 @@ signing process.
 The DATA field MUST be a JSON-encoded object of the form:
 
     {
-      "id": <PROXY UUID>,
+      "uuid": <PROXY UUID>,
       "timestamp": <TIMESTAMP>,
       <OTHER FIELDS>
     }
@@ -108,7 +107,9 @@ fields MUST be included:
 * proxy_version - (String, OPTIONAL) The proxy's current version.
 * client_addr - (String, REQUIRED) The CLIENT's IP address. This may be an
   IPv4 address in dotted-decimal notation, or an IPv6 address contained within
-  brackets [].
+  brackets []. An IPv6 address MUST NOT BE COMPACTED (i.e. removing stretches
+  of 0's) - that is, it must be exactly 39 bytes in length (not including the
+  surrounding [])
   Example: "127.0.0.1" (IPv4) or "[::1]" (IPv6)
 
 Example data:
@@ -119,7 +120,7 @@ Example data:
     "proxy_version": "0.1.1",
     "client_addr": "[::ffff:192.0.2.128]",
     "timestamp": 123456789,
-    "id": "5e3f7ade701644eb8c8b8e34558d6cc2"
+    "uuid": "5e3f7ade701644eb8c8b8e34558d6cc2"
 }
 ```
 
