@@ -110,7 +110,7 @@ fields MUST be included:
   brackets []. An IPv6 address MUST NOT BE COMPACTED (i.e. removing stretches
   of 0's) - that is, it must be exactly 39 bytes in length (not including the
   surrounding [])
-  Example: "127.0.0.1" (IPv4) or "[::1]" (IPv6)
+  Example: "127.0.0.1" (IPv4) or "[0000:0000:0000:0000:0000:0001]" (IPv6)
 
 Example data:
 
@@ -118,7 +118,7 @@ Example data:
 {
     "proxy_name": "RedLantern",
     "proxy_version": "0.1.1",
-    "client_addr": "[::ffff:192.0.2.128]",
+    "client_addr": "[0000:0000:0000:0000:0000:0001]",
     "timestamp": 123456789,
     "uuid": "5e3f7ade701644eb8c8b8e34558d6cc2"
 }
